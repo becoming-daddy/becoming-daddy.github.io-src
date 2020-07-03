@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- #
 from __future__ import unicode_literals
 
-AUTHOR = 'Νέος Μπαμπάς'
+AUTHOR = 'Χάρης'
 SITENAME = 'Έγινα μπαμπάς! Και τώρα τι;'
 SITEURL = ''
 
@@ -37,7 +37,7 @@ DEFAULT_PAGINATION = 10
 # hargikas -- manual change
 # Setting up the locale
 LOCALE = ('el',     # On Windows
-           'el_GR'  # On Unix/Linux
+          'el_GR'  # On Unix/Linux
 )
 
 

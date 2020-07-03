@@ -1,2 +1,2 @@
 @echo off
-pipenv run invoke reserve
+start cmd /c pipenv run invoke reserve
