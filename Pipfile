@@ -9,6 +9,7 @@ autopep8 = "*"
 rope = "*"
 
 [packages]
-pelican = {extras = ["markdown"], version = "*"}
+pelican = {extras = ["markdown"],version = "*"}
 typogrify = "*"
 invoke = "*"
+ghp-import = "*"

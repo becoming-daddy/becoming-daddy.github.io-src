@@ -1,3 +1,2 @@
 @echo off
-pipenv run invoke build
-pipenv run invoke serve
+pipenv run invoke reserve
