@@ -1,5 +1,5 @@
 @echo off
-pipenv run invoke gh_pages
+pipenv run invoke preview
 git fetch
 git pull
 git submodule update
