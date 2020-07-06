@@ -26,6 +26,7 @@ CONFIG = {
     # Github Pages configuration
     'github_pages_branch': 'master',
     'commit_message': "'Publish site on {}'".format(datetime.date.today().isoformat()),
+    'commit_src_message': "'Content and code update on {}'".format(datetime.date.today().isoformat()),
     # Port for `serve`
     'port': 8000,
     # Don't delete github files
@@ -160,5 +161,5 @@ def github(c):
 
     # Commit and publish the source project
     c.run('git add -A')
-    c.run('git commit -am "{commit_message}"'.format(**CONFIG))
+    c.run('git commit -am "{commit_src_message}"'.format(**CONFIG))
     c.run('git push')
