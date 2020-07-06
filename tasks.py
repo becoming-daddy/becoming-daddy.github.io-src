@@ -142,7 +142,7 @@ def publish(c):
             **CONFIG))
 
 
-@task(clean)
+@task
 def github(c):
     """Publish to GitHub User Pages"""
     # Get the latest from both github projects
@@ -151,6 +151,7 @@ def github(c):
     c.run('git submodule update')
 
     # Create the site
+    clean(c)
     preview(c)
 
     with chdir(CONFIG['deploy_path']):
