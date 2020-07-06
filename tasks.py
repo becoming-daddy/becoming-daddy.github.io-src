@@ -161,4 +161,4 @@ def github(c):
     # Commit and publish the source project
     c.run('git add -A')
     c.run('git commit -am "{commit_message}"'.format(**CONFIG))
-    c.run('git push --recurse-submodules=on-demand')
+    c.run('git push')
