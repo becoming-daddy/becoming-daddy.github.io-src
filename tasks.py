@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import with_statement  # only for python 2.5
 
+import contextlib
+import datetime
 import os
 import shutil
 import sys
-import datetime
 
 from invoke import task
 from invoke.util import cd
@@ -26,29 +28,53 @@ CONFIG = {
     'commit_message': "'Publish site on {}'".format(datetime.date.today().isoformat()),
     # Port for `serve`
     'port': 8000,
+    # Don't delete github files
+    'do_not_delete': ['.git', '.gitmodules', '.gitignore', 'LICENSE', 'README.md']
 }
+
+
+@contextlib.contextmanager
+def chdir(dirname=None):
+    curdir = os.getcwd()
+    try:
+        if dirname is not None:
+            os.chdir(dirname)
+        yield
+    finally:
+        os.chdir(curdir)
+
 
 @task
 def clean(c):
     """Remove generated files"""
     if os.path.isdir(CONFIG['deploy_path']):
-        shutil.rmtree(CONFIG['deploy_path'])
-        os.makedirs(CONFIG['deploy_path'])
+        for filename in os.listdir(CONFIG['deploy_path']):
+            if filename in CONFIG['do_not_delete']:
+                continue
+            file_path = os.path.join(CONFIG['deploy_path'], filename)
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+
 
 @task
 def build(c):
     """Build local version of site"""
     c.run('pelican -s {settings_base}'.format(**CONFIG))
 
+
 @task
 def rebuild(c):
     """`build` with the delete switch"""
     c.run('pelican -d -s {settings_base}'.format(**CONFIG))
 
+
 @task
 def regenerate(c):
     """Automatically regenerate site upon file modification"""
     c.run('pelican -r -s {settings_base}'.format(**CONFIG))
+
 
 @task
 def serve(c):
@@ -65,16 +91,19 @@ def serve(c):
     sys.stderr.write('Serving on port {port} ...\n'.format(**CONFIG))
     server.serve_forever()
 
+
 @task
 def reserve(c):
     """`build`, then `serve`"""
     build(c)
     serve(c)
 
+
 @task
 def preview(c):
     """Build production version of site"""
     c.run('pelican -s {settings_publish}'.format(**CONFIG))
+
 
 @task
 def livereload(c):
@@ -111,10 +140,25 @@ def publish(c):
             CONFIG['deploy_path'].rstrip('/') + '/',
             **CONFIG))
 
-@task
-def gh_pages(c):
-    """Publish to GitHub Pages"""
+
+@task(clean)
+def github(c):
+    """Publish to GitHub User Pages"""
+    # Get the latest from both github projects
+    c.run('git fetch')
+    c.run('git pull')
+    c.run('git submodule update')
+
+    # Create the site
     preview(c)
-    c.run('ghp-import -b {github_pages_branch} '
-          '-m {commit_message} '
-          '{deploy_path} -p'.format(**CONFIG))
+
+    with chdir(CONFIG['deploy_path']):
+        # Commit and publish the html site
+        c.run('git add -A')
+        c.run('git commit -am "{commit_message}"'.format(**CONFIG))
+        c.run('git push')
+
+    # Commit and publish the source project
+    c.run('git add -A')
+    c.run('git commit -am "{commit_message}"'.format(**CONFIG))
+    c.run('git push --recurse-submodules=on-demand')
