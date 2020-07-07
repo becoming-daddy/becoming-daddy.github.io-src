@@ -24,5 +24,5 @@ DELETE_OUTPUT_DIRECTORY = False
 
 # Following items are often useful when publishing
 
-DISQUS_SITENAME = "becoming-daddy"
-#GOOGLE_ANALYTICS = ""
+#DISQUS_SITENAME = "becoming-daddy"
+GOOGLE_ANALYTICS = "UA-60374362-2"
